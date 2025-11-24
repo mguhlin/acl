@@ -130,7 +130,6 @@
 <body>
 <div class="page">
 
-  <!-- UPDATED BANNER FILENAME -->
   <img src="ai_capabilityladder.png"
        alt="AI fluency levels banner illustration"
        class="banner">
@@ -252,7 +251,6 @@
 </div>
 
 <script>
-  // TODO: paste your Apps Script web app URL here
   const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycby6CPJwlk33sm7fxM5kEthnJjfsamSD2yjepsn15VFfWcWy-lizLVHa724xbi4-quKkLw/exec";
 
   function calculateScore() {
@@ -298,14 +296,12 @@
       summary = "AI informs your processes. Consider automation chains, Custom GPTs, and documenting your system.";
     }
 
-    // Show result on page
     levelEl.textContent = "Your level: " + level;
     scoreEl.textContent = "Total score: " + total + " out of 20";
     textEl.textContent = summary;
     resultEl.style.display = "block";
 
-    // Send data to Google Apps Script (fire-and-forget)
-    if (LOG_ENDPOINT && LOG_ENDPOINT !== "https://script.google.com/macros/s/AKfycby6CPJwlk33sm7fxM5kEthnJjfsamSD2yjepsn15VFfWcWy-lizLVHa724xbi4-quKkLw/exec") {
+    if (LOG_ENDPOINT) {
       const payload = {
         q1: answers.q1,
         q2: answers.q2,
@@ -318,13 +314,12 @@
 
       fetch(LOG_ENDPOINT, {
         method: "POST",
-        mode: "no-cors", // avoids CORS issues; you won’t see a response but it will log
+        mode: "no-cors",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(payload)
       }).catch(err => {
-        // Optional: silently ignore or log to console
         console.error("Logging error", err);
       });
     }
