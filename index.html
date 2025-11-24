@@ -252,6 +252,9 @@
 </div>
 
 <script>
+  // TODO: paste your Apps Script web app URL here
+  const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycby6CPJwlk33sm7fxM5kEthnJjfsamSD2yjepsn15VFfWcWy-lizLVHa724xbi4-quKkLw/exec";
+
   function calculateScore() {
     const form = document.getElementById("quizForm");
     const errorEl = document.getElementById("error");
@@ -264,15 +267,18 @@
     resultEl.style.display = "none";
 
     const questions = ["q1","q2","q3","q4","q5"];
+    const answers = {};
     let total = 0;
 
     for (const q of questions) {
-      const value = form.querySelector('input[name="' + q + '"]:checked');
-      if (!value) {
+      const selected = form.querySelector('input[name="' + q + '"]:checked');
+      if (!selected) {
         errorEl.textContent = "Please answer all questions before calculating your score.";
         return;
       }
-      total += parseInt(value.value, 10);
+      const value = parseInt(selected.value, 10);
+      answers[q] = value;
+      total += value;
     }
 
     let level = "";
@@ -292,11 +298,36 @@
       summary = "AI informs your processes. Consider automation chains, Custom GPTs, and documenting your system.";
     }
 
+    // Show result on page
     levelEl.textContent = "Your level: " + level;
     scoreEl.textContent = "Total score: " + total + " out of 20";
     textEl.textContent = summary;
-
     resultEl.style.display = "block";
+
+    // Send data to Google Apps Script (fire-and-forget)
+    if (LOG_ENDPOINT && LOG_ENDPOINT !== "https://script.google.com/macros/s/AKfycby6CPJwlk33sm7fxM5kEthnJjfsamSD2yjepsn15VFfWcWy-lizLVHa724xbi4-quKkLw/exec") {
+      const payload = {
+        q1: answers.q1,
+        q2: answers.q2,
+        q3: answers.q3,
+        q4: answers.q4,
+        q5: answers.q5,
+        total: total,
+        level: level
+      };
+
+      fetch(LOG_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors", // avoids CORS issues; you won’t see a response but it will log
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      }).catch(err => {
+        // Optional: silently ignore or log to console
+        console.error("Logging error", err);
+      });
+    }
   }
 </script>
 
